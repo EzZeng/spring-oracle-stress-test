@@ -1,0 +1,78 @@
+spring:
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 200MB
+      max-request-size: 250MB
+      file-size-threshold: 16KB
+
+  # 主資料庫連線資訊（由 AtomikosDataSourceConfig 讀取，建立 XA DataSource）
+  datasource:
+    url: jdbc:oracle:thin:@localhost:1521/FREEPDB1
+    username: stresstest
+    password: stresstest
+
+  # JTA / Atomikos 設定
+  jta:
+    enabled: true
+    atomikos:
+      properties:
+        # 關閉持久化日誌，免除 DBA 授予 sys.dba_pending_transactions 等 XA 恢復權限
+        # 代價：JVM crash 後 in-doubt transaction 需手動處理
+        enable-logging: false
+        max-timeout: 300000
+        default-jta-timeout: 120000
+        log-base-dir: /tmp/atomikos
+
+  jpa:
+    database-platform: org.hibernate.dialect.Oracle12cDialect
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        jdbc:
+          batch_size: 50
+        order_inserts: true
+        # 開啟統計資訊：可在 log 中觀察 dirty-check count、flush count、entity load count 等指標
+        generate_statistics: true
+        # ── Atomikos JTA 模式的 Connection Handling ────────────────────────────────
+        # JTA 預設值：DELAYED_ACQUISITION_AND_RELEASE_AFTER_STATEMENT（每條 SQL 後歸還連線）
+        # DELAYED_ACQUISITION_AND_HOLD：同一 JTA tx 取得連線後保持到 tx 結束，行為近似資源本地模式。
+        # 適合本專案 1.2M 筆批次寫入（大量 SQL，若每條後都借還連線，HikariCP/Atomikos 開銷大）。
+        connection:
+          handling_mode: DELAYED_ACQUISITION_AND_HOLD
+        # ── Bytecode Enhancement 說明 ──────────────────────────────────────────────
+        # Hibernate 5.x（Spring Boot 2.7.x）：
+        #   hibernate-enhance-maven-plugin 未發布至 Maven Central（僅 Hibernate 6.x 有）。
+        #   本專案以下列替代方案達到同等 JTA 模式下的 entity 優化：
+        #   1. @DynamicUpdate  → Hibernate 知道哪些欄位 dirty 後，只產生含 dirty 欄位的 UPDATE SQL
+        #   2. DELAYED_ACQUISITION_AND_HOLD → 連線維持 tx 生命週期，避免 AFTER_STATEMENT lazy-proxy 問題
+        #
+        # Hibernate 6.x（Spring Boot 3.x）升級路徑：
+        #   加入 org.hibernate:hibernate-enhance-maven-plugin:6.x 即可取得完整 compile-time enhancement：
+        #   - enableDirtyTracking=true  → setter 植入 dirty flag，flush 時完全不做 snapshot 比對
+        #   - enableLazyInitialization=true → @Basic(fetch=LAZY) 自主延遲載入，不依賴 Session-bound proxy
+    show-sql: false
+
+server:
+  port: 8080
+  tomcat:
+    max-swallow-size: 250MB
+
+logging:
+  level:
+    root: WARN
+    com.stresstest: INFO
+
+# 兩個網域資料庫（放行後寫入目標）
+# 預設指向同一個 Oracle，可分別修改為不同網域的資料庫
+domain:
+  datasource:
+    a:
+      jdbc-url: jdbc:oracle:thin:@localhost:1521/FREEPDB1
+      username: stresstest
+      password: stresstest
+    b:
+      jdbc-url: jdbc:oracle:thin:@localhost:1521/FREEPDB1
+      username: stresstest
+      password: stresstest
