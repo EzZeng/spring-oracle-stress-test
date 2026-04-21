@@ -1,0 +1,60 @@
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::               (v2.7.18)
+
+2026-04-21 21:25:51.383  INFO 94315 --- [           main] com.stresstest.spring.Application        : Starting Application v1.0-SNAPSHOT using Java 25.0.2 on ezzengdacStudio with PID 94315 (/Users/ezzeng/Documents/test/spring-oracle-stress-test/target/spring-oracle-stress-test-1.0-SNAPSHOT.jar started by ezzeng in /Users/ezzeng/Documents/test/spring-oracle-stress-test)
+2026-04-21 21:25:51.385  INFO 94315 --- [           main] com.stresstest.spring.Application        : No active profile set, falling back to 1 default profile: "default"
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by org.apache.tomcat.jni.Library in an unnamed module (jar:file:/Users/ezzeng/Documents/test/spring-oracle-stress-test/target/spring-oracle-stress-test-1.0-SNAPSHOT.jar!/BOOT-INF/lib/tomcat-embed-core-9.0.117.jar!/)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+2026-04-21 21:25:52.565  WARN 94315 --- [           main] c.atomikos.jdbc.AbstractDataSourceBean   : AtomikosDataSoureBean 'domainAXA': poolSize equals default - this may cause performance problems!
+2026-04-21 21:25:52.593  WARN 94315 --- [           main] c.atomikos.jdbc.AbstractDataSourceBean   : AtomikosDataSoureBean 'domainBXA': poolSize equals default - this may cause performance problems!
+2026-04-21 21:25:52.628  WARN 94315 --- [           main] c.a.icatch.provider.imp.AssemblerImp     : Thanks for using Atomikos! Evaluate http://www.atomikos.com/Main/ExtremeTransactions for advanced features and professional support
+or register at http://www.atomikos.com/Main/RegisterYourDownload to disable this message and receive FREE tips & advice
+Thanks for using Atomikos! Evaluate http://www.atomikos.com/Main/ExtremeTransactions for advanced features and professional support
+or register at http://www.atomikos.com/Main/RegisterYourDownload to disable this message and receive FREE tips & advice
+2026-04-21 21:25:53.600  INFO 94315 --- [           main] c.stresstest.spring.service.CaseService  : 案件 Schema 初始化完成（upload_case + biz_a/b/c_detail + download_file）
+2026-04-21 21:25:53.604  INFO 94315 --- [           main] c.stresstest.spring.service.CaseService  : [Domain-A] approved_file_detail 表初始化完成
+2026-04-21 21:25:53.608  INFO 94315 --- [           main] c.stresstest.spring.service.CaseService  : [Domain-B] approved_file_detail 表初始化完成
+2026-04-21 21:25:53.697  WARN 94315 --- [           main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-04-21 21:25:53.868  INFO 94315 --- [           main] com.stresstest.spring.Application        : Started Application in 2.741 seconds (JVM running for 2.971)
+2026-04-21 21:25:56.023  INFO 94315 --- [nio-8080-exec-2] c.s.spring.controller.UploadController   : === 開始處理：策略 3 - [TX] BatchChunk 分批 ===
+2026-04-21 21:25:56.025  INFO 94315 --- [nio-8080-exec-2] c.s.spring.controller.UploadController   : 檔案大小: 605000029 bytes (576.97 MB)
+2026-04-21 21:25:56.289  INFO 94315 --- [nio-8080-exec-2] c.s.spring.service.DatabaseService       : Master-Detail Schema 初始化完成（file_master + file_detail）
+2026-04-21 21:25:56.313  INFO 94315 --- [nio-8080-exec-2] c.s.spring.service.FileValidator         : Header 檢核通過: 2026/04/21
+2026-04-21 21:26:00.009  INFO 94315 --- [nio-8080-exec-2] c.s.s.strategy.TxBatchChunkStrategy      : [TX-BatchChunk] 已送出 200000 筆
+2026-04-21 21:26:01.464  INFO 94315 --- [nio-8080-exec-2] c.s.s.strategy.TxBatchChunkStrategy      : [TX-BatchChunk] 已送出 400000 筆
+2026-04-21 21:26:02.868  INFO 94315 --- [nio-8080-exec-2] c.s.s.strategy.TxBatchChunkStrategy      : [TX-BatchChunk] 已送出 600000 筆
+2026-04-21 21:26:04.056  INFO 94315 --- [nio-8080-exec-2] c.s.s.strategy.TxBatchChunkStrategy      : [TX-BatchChunk] 已送出 800000 筆
+2026-04-21 21:26:05.561  INFO 94315 --- [nio-8080-exec-2] c.s.s.strategy.TxBatchChunkStrategy      : [TX-BatchChunk] 已送出 1000000 筆
+2026-04-21 21:26:07.050  INFO 94315 --- [nio-8080-exec-2] c.s.s.strategy.TxBatchChunkStrategy      : [TX-BatchChunk] 已送出 1200000 筆
+2026-04-21 21:26:08.395  INFO 94315 --- [nio-8080-exec-2] c.s.s.strategy.TxBatchChunkStrategy      : [TX-BatchChunk] 已送出 1400000 筆
+2026-04-21 21:26:09.831  INFO 94315 --- [nio-8080-exec-2] c.s.s.strategy.TxBatchChunkStrategy      : [TX-BatchChunk] 已送出 1600000 筆
+2026-04-21 21:26:11.281  INFO 94315 --- [nio-8080-exec-2] c.s.s.strategy.TxBatchChunkStrategy      : [TX-BatchChunk] 已送出 1800000 筆
+2026-04-21 21:26:12.588  INFO 94315 --- [nio-8080-exec-2] c.s.s.strategy.TxBatchChunkStrategy      : [TX-BatchChunk] 已送出 2000000 筆
+2026-04-21 21:26:13.988  INFO 94315 --- [nio-8080-exec-2] c.s.s.strategy.TxBatchChunkStrategy      : [TX-BatchChunk] 已送出 2200000 筆
+2026-04-21 21:26:15.371  INFO 94315 --- [nio-8080-exec-2] c.s.s.strategy.TxBatchChunkStrategy      : [TX-BatchChunk] 已送出 2400000 筆
+2026-04-21 21:26:16.795  INFO 94315 --- [nio-8080-exec-2] c.s.s.strategy.TxBatchChunkStrategy      : [TX-BatchChunk] 已送出 2600000 筆
+2026-04-21 21:26:18.283  INFO 94315 --- [nio-8080-exec-2] c.s.s.strategy.TxBatchChunkStrategy      : [TX-BatchChunk] 已送出 2800000 筆
+2026-04-21 21:26:19.538  INFO 94315 --- [nio-8080-exec-2] c.s.s.strategy.TxBatchChunkStrategy      : [TX-BatchChunk] 已送出 3000000 筆
+2026-04-21 21:26:20.938  INFO 94315 --- [nio-8080-exec-2] c.s.s.strategy.TxBatchChunkStrategy      : [TX-BatchChunk] 已送出 3200000 筆
+2026-04-21 21:26:22.272  INFO 94315 --- [nio-8080-exec-2] c.s.s.strategy.TxBatchChunkStrategy      : [TX-BatchChunk] 已送出 3400000 筆
+2026-04-21 21:26:23.744  INFO 94315 --- [nio-8080-exec-2] c.s.s.strategy.TxBatchChunkStrategy      : [TX-BatchChunk] 已送出 3600000 筆
+2026-04-21 21:26:25.189  INFO 94315 --- [nio-8080-exec-2] c.s.s.strategy.TxBatchChunkStrategy      : [TX-BatchChunk] 已送出 3800000 筆
+2026-04-21 21:26:26.621  INFO 94315 --- [nio-8080-exec-2] c.s.s.strategy.TxBatchChunkStrategy      : [TX-BatchChunk] 已送出 4000000 筆
+2026-04-21 21:26:28.016  INFO 94315 --- [nio-8080-exec-2] c.s.s.strategy.TxBatchChunkStrategy      : [TX-BatchChunk] 已送出 4200000 筆
+2026-04-21 21:26:29.410  INFO 94315 --- [nio-8080-exec-2] c.s.s.strategy.TxBatchChunkStrategy      : [TX-BatchChunk] 已送出 4400000 筆
+2026-04-21 21:26:30.710  INFO 94315 --- [nio-8080-exec-2] c.s.s.strategy.TxBatchChunkStrategy      : [TX-BatchChunk] 已送出 4600000 筆
+2026-04-21 21:26:32.121  INFO 94315 --- [nio-8080-exec-2] c.s.s.strategy.TxBatchChunkStrategy      : [TX-BatchChunk] 已送出 4800000 筆
+2026-04-21 21:26:33.423  INFO 94315 --- [nio-8080-exec-2] c.s.s.strategy.TxBatchChunkStrategy      : [TX-BatchChunk] 已送出 5000000 筆
+2026-04-21 21:26:33.423  INFO 94315 --- [nio-8080-exec-2] c.s.spring.service.FileValidator         : Trailer 檢核通過: 筆數=5000000, 字元數=600000000
+2026-04-21 21:26:33.424  INFO 94315 --- [nio-8080-exec-2] c.s.s.strategy.TxBatchChunkStrategy      : [TX-BatchChunk] 寫入完成，共 5000000 筆 (masterId=237)
+2026-04-21 21:26:40.789  INFO 94315 --- [nio-8080-exec-2] c.stresstest.spring.service.CaseService  : 案件已建立 - caseId=203, masterId=237, bizType=null, fileName=test_data_5000000.dat
+2026-04-21 21:26:40.801  INFO 94315 --- [nio-8080-exec-2] c.s.spring.controller.UploadController   : === 完成：[TX] BatchChunk 分批 | 耗時: 37205ms | 峰值: 347.38 MB | DB: 5000000 筆 ===

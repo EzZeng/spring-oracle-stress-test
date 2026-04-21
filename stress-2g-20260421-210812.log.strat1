@@ -1,0 +1,44 @@
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::               (v2.7.18)
+
+2026-04-21 21:08:18.968  INFO 89548 --- [           main] com.stresstest.spring.Application        : Starting Application v1.0-SNAPSHOT using Java 25.0.2 on ezzengdacStudio with PID 89548 (/Users/ezzeng/Documents/test/spring-oracle-stress-test/target/spring-oracle-stress-test-1.0-SNAPSHOT.jar started by ezzeng in /Users/ezzeng/Documents/test/spring-oracle-stress-test)
+2026-04-21 21:08:18.970  INFO 89548 --- [           main] com.stresstest.spring.Application        : No active profile set, falling back to 1 default profile: "default"
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by org.apache.tomcat.jni.Library in an unnamed module (jar:file:/Users/ezzeng/Documents/test/spring-oracle-stress-test/target/spring-oracle-stress-test-1.0-SNAPSHOT.jar!/BOOT-INF/lib/tomcat-embed-core-9.0.117.jar!/)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+2026-04-21 21:08:20.119  WARN 89548 --- [           main] c.atomikos.jdbc.AbstractDataSourceBean   : AtomikosDataSoureBean 'domainAXA': poolSize equals default - this may cause performance problems!
+2026-04-21 21:08:20.148  WARN 89548 --- [           main] c.atomikos.jdbc.AbstractDataSourceBean   : AtomikosDataSoureBean 'domainBXA': poolSize equals default - this may cause performance problems!
+2026-04-21 21:08:20.183  WARN 89548 --- [           main] c.a.icatch.provider.imp.AssemblerImp     : Thanks for using Atomikos! Evaluate http://www.atomikos.com/Main/ExtremeTransactions for advanced features and professional support
+or register at http://www.atomikos.com/Main/RegisterYourDownload to disable this message and receive FREE tips & advice
+Thanks for using Atomikos! Evaluate http://www.atomikos.com/Main/ExtremeTransactions for advanced features and professional support
+or register at http://www.atomikos.com/Main/RegisterYourDownload to disable this message and receive FREE tips & advice
+2026-04-21 21:08:21.116  INFO 89548 --- [           main] c.stresstest.spring.service.CaseService  : 案件 Schema 初始化完成（upload_case + biz_a/b/c_detail + download_file）
+2026-04-21 21:08:21.119  INFO 89548 --- [           main] c.stresstest.spring.service.CaseService  : [Domain-A] approved_file_detail 表初始化完成
+2026-04-21 21:08:21.123  INFO 89548 --- [           main] c.stresstest.spring.service.CaseService  : [Domain-B] approved_file_detail 表初始化完成
+2026-04-21 21:08:21.206  WARN 89548 --- [           main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-04-21 21:08:21.377  INFO 89548 --- [           main] com.stresstest.spring.Application        : Started Application in 2.663 seconds (JVM running for 2.876)
+2026-04-21 21:08:22.075  INFO 89548 --- [nio-8080-exec-2] c.s.spring.controller.UploadController   : === 開始處理：策略 1 - [TX] List 全載入 ===
+2026-04-21 21:08:22.076  INFO 89548 --- [nio-8080-exec-2] c.s.spring.controller.UploadController   : 檔案大小: 121000029 bytes (115.39 MB)
+2026-04-21 21:08:22.334  INFO 89548 --- [nio-8080-exec-2] c.s.spring.service.DatabaseService       : Master-Detail Schema 初始化完成（file_master + file_detail）
+2026-04-21 21:08:22.334  INFO 89548 --- [nio-8080-exec-2] c.s.spring.strategy.TxListStrategy       : [TX-List] 讀取所有行到 List...
+2026-04-21 21:08:22.488  INFO 89548 --- [nio-8080-exec-2] c.s.spring.strategy.TxListStrategy       : [TX-List] 讀取完成，共 1000002 行（含 header/trailer）
+2026-04-21 21:08:22.489  INFO 89548 --- [nio-8080-exec-2] c.s.spring.service.FileValidator         : Header 檢核通過: 2026/03/28
+2026-04-21 21:08:22.495  INFO 89548 --- [nio-8080-exec-2] c.s.spring.service.FileValidator         : Trailer 檢核通過: 筆數=1000000, 字元數=120000000
+2026-04-21 21:08:22.495  INFO 89548 --- [nio-8080-exec-2] c.s.spring.strategy.TxListStrategy       : [TX-List] 解析為 RowRecord...
+2026-04-21 21:08:22.738  INFO 89548 --- [nio-8080-exec-2] c.s.spring.strategy.TxListStrategy       : [TX-List] 開始寫入 Oracle（單一交易）...
+2026-04-21 21:08:24.095  INFO 89548 --- [nio-8080-exec-2] c.s.spring.strategy.TxListStrategy       : [TX-List] 已送出 200000 筆
+2026-04-21 21:08:25.491  INFO 89548 --- [nio-8080-exec-2] c.s.spring.strategy.TxListStrategy       : [TX-List] 已送出 400000 筆
+2026-04-21 21:08:26.896  INFO 89548 --- [nio-8080-exec-2] c.s.spring.strategy.TxListStrategy       : [TX-List] 已送出 600000 筆
+2026-04-21 21:08:28.369  INFO 89548 --- [nio-8080-exec-2] c.s.spring.strategy.TxListStrategy       : [TX-List] 已送出 800000 筆
+2026-04-21 21:08:29.740  INFO 89548 --- [nio-8080-exec-2] c.s.spring.strategy.TxListStrategy       : [TX-List] 已送出 1000000 筆
+2026-04-21 21:08:29.741  INFO 89548 --- [nio-8080-exec-2] c.s.spring.strategy.TxListStrategy       : [TX-List] 寫入完成，共 1000000 筆 (masterId=211)
+2026-04-21 21:08:29.906  INFO 89548 --- [nio-8080-exec-2] c.stresstest.spring.service.CaseService  : 案件已建立 - caseId=177, masterId=211, bizType=null, fileName=test_data.dat
+2026-04-21 21:08:29.919  INFO 89548 --- [nio-8080-exec-2] c.s.spring.controller.UploadController   : === 完成：[TX] List 全載入 | 耗時: 7534ms | 峰值: 1031.35 MB | DB: 1000000 筆 ===

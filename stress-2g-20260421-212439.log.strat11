@@ -1,0 +1,60 @@
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::               (v2.7.18)
+
+2026-04-21 21:35:58.643  INFO 95903 --- [           main] com.stresstest.spring.Application        : Starting Application v1.0-SNAPSHOT using Java 25.0.2 on ezzengdacStudio with PID 95903 (/Users/ezzeng/Documents/test/spring-oracle-stress-test/target/spring-oracle-stress-test-1.0-SNAPSHOT.jar started by ezzeng in /Users/ezzeng/Documents/test/spring-oracle-stress-test)
+2026-04-21 21:35:58.645  INFO 95903 --- [           main] com.stresstest.spring.Application        : No active profile set, falling back to 1 default profile: "default"
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by org.apache.tomcat.jni.Library in an unnamed module (jar:file:/Users/ezzeng/Documents/test/spring-oracle-stress-test/target/spring-oracle-stress-test-1.0-SNAPSHOT.jar!/BOOT-INF/lib/tomcat-embed-core-9.0.117.jar!/)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+2026-04-21 21:35:59.834  WARN 95903 --- [           main] c.atomikos.jdbc.AbstractDataSourceBean   : AtomikosDataSoureBean 'domainAXA': poolSize equals default - this may cause performance problems!
+2026-04-21 21:35:59.865  WARN 95903 --- [           main] c.atomikos.jdbc.AbstractDataSourceBean   : AtomikosDataSoureBean 'domainBXA': poolSize equals default - this may cause performance problems!
+2026-04-21 21:35:59.900  WARN 95903 --- [           main] c.a.icatch.provider.imp.AssemblerImp     : Thanks for using Atomikos! Evaluate http://www.atomikos.com/Main/ExtremeTransactions for advanced features and professional support
+or register at http://www.atomikos.com/Main/RegisterYourDownload to disable this message and receive FREE tips & advice
+Thanks for using Atomikos! Evaluate http://www.atomikos.com/Main/ExtremeTransactions for advanced features and professional support
+or register at http://www.atomikos.com/Main/RegisterYourDownload to disable this message and receive FREE tips & advice
+2026-04-21 21:36:00.865  INFO 95903 --- [           main] c.stresstest.spring.service.CaseService  : 案件 Schema 初始化完成（upload_case + biz_a/b/c_detail + download_file）
+2026-04-21 21:36:00.869  INFO 95903 --- [           main] c.stresstest.spring.service.CaseService  : [Domain-A] approved_file_detail 表初始化完成
+2026-04-21 21:36:00.872  INFO 95903 --- [           main] c.stresstest.spring.service.CaseService  : [Domain-B] approved_file_detail 表初始化完成
+2026-04-21 21:36:00.958  WARN 95903 --- [           main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-04-21 21:36:01.140  INFO 95903 --- [           main] com.stresstest.spring.Application        : Started Application in 2.847 seconds (JVM running for 3.066)
+2026-04-21 21:36:03.152  INFO 95903 --- [nio-8080-exec-2] c.s.spring.controller.UploadController   : === 開始處理：策略 11 - [JPA] Repository save 逐筆 ===
+2026-04-21 21:36:03.154  INFO 95903 --- [nio-8080-exec-2] c.s.spring.controller.UploadController   : 檔案大小: 605000029 bytes (576.97 MB)
+2026-04-21 21:36:03.406  INFO 95903 --- [nio-8080-exec-2] c.s.spring.service.JpaDatabaseService    : JPA Schema 初始化完成（file_master + jpa_records + jpa_id_alloc）
+2026-04-21 21:36:03.689  INFO 95903 --- [nio-8080-exec-2] c.s.spring.service.FileValidator         : Header 檢核通過: 2026/04/21
+2026-04-21 21:36:07.657  INFO 95903 --- [nio-8080-exec-2] c.s.spring.strategy.JpaSaveStrategy      : [JPA-Save] 已送出 200000 筆
+2026-04-21 21:36:11.043  INFO 95903 --- [nio-8080-exec-2] c.s.spring.strategy.JpaSaveStrategy      : [JPA-Save] 已送出 400000 筆
+2026-04-21 21:36:14.495  INFO 95903 --- [nio-8080-exec-2] c.s.spring.strategy.JpaSaveStrategy      : [JPA-Save] 已送出 600000 筆
+2026-04-21 21:36:17.793  INFO 95903 --- [nio-8080-exec-2] c.s.spring.strategy.JpaSaveStrategy      : [JPA-Save] 已送出 800000 筆
+2026-04-21 21:36:20.995  INFO 95903 --- [nio-8080-exec-2] c.s.spring.strategy.JpaSaveStrategy      : [JPA-Save] 已送出 1000000 筆
+2026-04-21 21:36:24.329  INFO 95903 --- [nio-8080-exec-2] c.s.spring.strategy.JpaSaveStrategy      : [JPA-Save] 已送出 1200000 筆
+2026-04-21 21:36:27.760  INFO 95903 --- [nio-8080-exec-2] c.s.spring.strategy.JpaSaveStrategy      : [JPA-Save] 已送出 1400000 筆
+2026-04-21 21:36:31.054  INFO 95903 --- [nio-8080-exec-2] c.s.spring.strategy.JpaSaveStrategy      : [JPA-Save] 已送出 1600000 筆
+2026-04-21 21:36:34.390  INFO 95903 --- [nio-8080-exec-2] c.s.spring.strategy.JpaSaveStrategy      : [JPA-Save] 已送出 1800000 筆
+2026-04-21 21:36:37.623  INFO 95903 --- [nio-8080-exec-2] c.s.spring.strategy.JpaSaveStrategy      : [JPA-Save] 已送出 2000000 筆
+2026-04-21 21:36:40.796  INFO 95903 --- [nio-8080-exec-2] c.s.spring.strategy.JpaSaveStrategy      : [JPA-Save] 已送出 2200000 筆
+2026-04-21 21:36:43.985  INFO 95903 --- [nio-8080-exec-2] c.s.spring.strategy.JpaSaveStrategy      : [JPA-Save] 已送出 2400000 筆
+2026-04-21 21:36:47.277  INFO 95903 --- [nio-8080-exec-2] c.s.spring.strategy.JpaSaveStrategy      : [JPA-Save] 已送出 2600000 筆
+2026-04-21 21:36:50.488  INFO 95903 --- [nio-8080-exec-2] c.s.spring.strategy.JpaSaveStrategy      : [JPA-Save] 已送出 2800000 筆
+2026-04-21 21:36:53.911  INFO 95903 --- [nio-8080-exec-2] c.s.spring.strategy.JpaSaveStrategy      : [JPA-Save] 已送出 3000000 筆
+2026-04-21 21:36:57.300  INFO 95903 --- [nio-8080-exec-2] c.s.spring.strategy.JpaSaveStrategy      : [JPA-Save] 已送出 3200000 筆
+2026-04-21 21:37:00.444  INFO 95903 --- [nio-8080-exec-2] c.s.spring.strategy.JpaSaveStrategy      : [JPA-Save] 已送出 3400000 筆
+2026-04-21 21:37:03.690  INFO 95903 --- [nio-8080-exec-2] c.s.spring.strategy.JpaSaveStrategy      : [JPA-Save] 已送出 3600000 筆
+2026-04-21 21:37:06.800  INFO 95903 --- [nio-8080-exec-2] c.s.spring.strategy.JpaSaveStrategy      : [JPA-Save] 已送出 3800000 筆
+2026-04-21 21:37:09.928  INFO 95903 --- [nio-8080-exec-2] c.s.spring.strategy.JpaSaveStrategy      : [JPA-Save] 已送出 4000000 筆
+2026-04-21 21:37:13.262  INFO 95903 --- [nio-8080-exec-2] c.s.spring.strategy.JpaSaveStrategy      : [JPA-Save] 已送出 4200000 筆
+2026-04-21 21:37:16.445  INFO 95903 --- [nio-8080-exec-2] c.s.spring.strategy.JpaSaveStrategy      : [JPA-Save] 已送出 4400000 筆
+2026-04-21 21:37:19.590  INFO 95903 --- [nio-8080-exec-2] c.s.spring.strategy.JpaSaveStrategy      : [JPA-Save] 已送出 4600000 筆
+2026-04-21 21:37:23.013  INFO 95903 --- [nio-8080-exec-2] c.s.spring.strategy.JpaSaveStrategy      : [JPA-Save] 已送出 4800000 筆
+2026-04-21 21:37:26.447  INFO 95903 --- [nio-8080-exec-2] c.s.spring.strategy.JpaSaveStrategy      : [JPA-Save] 已送出 5000000 筆
+2026-04-21 21:37:26.448  INFO 95903 --- [nio-8080-exec-2] c.s.spring.service.FileValidator         : Trailer 檢核通過: 筆數=5000000, 字元數=600000000
+2026-04-21 21:37:26.450  INFO 95903 --- [nio-8080-exec-2] c.s.spring.strategy.JpaSaveStrategy      : [JPA-Save] COMMIT 成功，共 5000000 筆 (masterId=245)
+2026-04-21 21:37:26.662  INFO 95903 --- [nio-8080-exec-2] c.stresstest.spring.service.CaseService  : 案件已建立 - caseId=211, masterId=245, bizType=null, fileName=test_data_5000000.dat
+2026-04-21 21:37:26.665  INFO 95903 --- [nio-8080-exec-2] c.s.spring.controller.UploadController   : === 完成：[JPA] Repository save 逐筆 | 耗時: 82895ms | 峰值: 361.99 MB | DB: 5000000 筆 ===

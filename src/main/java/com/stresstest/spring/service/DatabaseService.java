@@ -72,21 +72,23 @@ public class DatabaseService {
             }
             // file_detail
             try {
+                // 使用 CHAR 語意（VARCHAR2(10 CHAR)）以容納 10 個 Unicode 字元
+                // （UTF-8 下中文 / 日文 / 韓文每字 3 bytes，若用 BYTE 語意只能存 3 個中文字）
                 stmt.execute("CREATE TABLE file_detail (" +
                         "id NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY, " +
                         "master_id NUMBER NOT NULL, " +
-                        "field_a VARCHAR2(10), " +
-                        "field_b VARCHAR2(10), " +
-                        "field_c VARCHAR2(10), " +
-                        "field_d VARCHAR2(10), " +
-                        "field_e VARCHAR2(10), " +
-                        "field_f VARCHAR2(10), " +
-                        "field_g VARCHAR2(10), " +
-                        "field_h VARCHAR2(10), " +
-                        "field_i VARCHAR2(10), " +
-                        "field_j VARCHAR2(10), " +
-                        "field_k VARCHAR2(10), " +
-                        "field_l VARCHAR2(10), " +
+                        "field_a VARCHAR2(10 CHAR), " +
+                        "field_b VARCHAR2(10 CHAR), " +
+                        "field_c VARCHAR2(10 CHAR), " +
+                        "field_d VARCHAR2(10 CHAR), " +
+                        "field_e VARCHAR2(10 CHAR), " +
+                        "field_f VARCHAR2(10 CHAR), " +
+                        "field_g VARCHAR2(10 CHAR), " +
+                        "field_h VARCHAR2(10 CHAR), " +
+                        "field_i VARCHAR2(10 CHAR), " +
+                        "field_j VARCHAR2(10 CHAR), " +
+                        "field_k VARCHAR2(10 CHAR), " +
+                        "field_l VARCHAR2(10 CHAR), " +
                         "CONSTRAINT fk_detail_master FOREIGN KEY (master_id) REFERENCES file_master(id)" +
                         ")");
             } catch (SQLException e) {

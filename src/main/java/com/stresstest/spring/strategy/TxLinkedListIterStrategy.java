@@ -10,7 +10,9 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -40,7 +42,7 @@ public class TxLinkedListIterStrategy implements ProcessingStrategy {
 
         log.info("[TX-LLIter] 讀取所有行到 LinkedList...");
         List<String> allLines = new LinkedList<>();
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath.toFile()), 8 * 1024 * 1024)) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(filePath.toFile()), StandardCharsets.UTF_8), 8 * 1024 * 1024)) {
             String line;
             while ((line = reader.readLine()) != null) {
                 allLines.add(line);

@@ -1,6 +1,7 @@
 package com.stresstest.spring.controller;
 
 import com.stresstest.spring.entity.UploadCase;
+import com.stresstest.spring.service.AsyncApprovalService;
 import com.stresstest.spring.service.CaseService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +28,9 @@ public class TodoController {
 
     @Autowired
     private CaseService caseService;
+
+    @Autowired
+    private AsyncApprovalService asyncApprovalService;
 
     @GetMapping
     public ResponseEntity<List<Map<String, Object>>> listPending() {
@@ -63,6 +67,30 @@ public class TodoController {
             log.error("放行失敗: {}", e.getMessage(), e);
             return ResponseEntity.status(500).body(Collections.singletonMap("error", (Object) ("放行失敗: " + e.getMessage())));
         }
+    }
+
+    /**
+     * 模擬「@Async 放行」：在獨立執行緒裡跑兩個獨立 @Transactional 交易。
+     * 觀察 transaction 行為（部分 commit、部分 rollback、tx context 不傳遞等）。
+     *
+     * <pre>
+     *   POST /api/todo/{id}/approve-async                          → 兩個 tx 都 commit
+     *   POST /api/todo/{id}/approve-async?simulateFailure=true     → Tx1 commit, Tx2 故意失敗 rollback
+     * </pre>
+     *
+     * 端點立即回應 ACCEPTED；非同步結果請查 server log 與 approval_async_log 表。
+     */
+    @PostMapping("/{id}/approve-async")
+    public ResponseEntity<Map<String, Object>> approveAsync(
+            @PathVariable Long id,
+            @RequestParam(value = "simulateFailure", defaultValue = "false") boolean simulateFailure) {
+        asyncApprovalService.asyncApproveTwoTransactions(id, simulateFailure);
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("status", "ACCEPTED");
+        response.put("caseId", id);
+        response.put("simulateFailure", simulateFailure);
+        response.put("message", "已派送非同步放行，請查 server log 與 approval_async_log 表");
+        return ResponseEntity.accepted().body(response);
     }
 
     @PostMapping("/{id}/reject")

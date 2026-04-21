@@ -15,7 +15,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -61,7 +63,7 @@ public class JpaThreadPoolSaveStrategy implements ProcessingStrategy {
             masterConn.commit();
         }
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath.toFile()), 8 * 1024 * 1024)) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(filePath.toFile()), StandardCharsets.UTF_8), 8 * 1024 * 1024)) {
             // Header 檢核
             String headerLine = reader.readLine();
             FileValidator.validateHeader(headerLine);

@@ -1,8 +1,10 @@
 package com.stresstest.spring.service;
 
 import java.io.BufferedWriter;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
@@ -46,7 +48,7 @@ public class FileGenerator {
         Random random = new Random(42);
         long totalCharCount = 0;
 
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath.toFile()), 8 * 1024 * 1024)) {
+        try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filePath.toFile()), StandardCharsets.UTF_8), 8 * 1024 * 1024)) {
             // ===== 第 1 行：日期 header（固定 10 字元，yyyy/MM/dd）=====
             String dateHeader = new SimpleDateFormat("yyyy/MM/dd").format(new Date());
             writer.write(dateHeader);

@@ -19,9 +19,9 @@
     <description>Spring Boot 2.7.18 + Oracle DB - 100萬筆 CSV 上傳壓力測試</description>
 
     <properties>
-        <java.version>21</java.version>
-        <maven.compiler.source>21</maven.compiler.source>
-        <maven.compiler.target>21</maven.compiler.target>
+        <java.version>1.8</java.version>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <tomcat.version>9.0.117</tomcat.version>
         <!-- CVE fixes: override Spring Boot BOM-managed versions -->
@@ -66,6 +66,14 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <!-- 強制 Java 8 API 相容：即使用高版 JDK 編譯，也禁用 Java 9+ 的 API -->
+                    <release>8</release>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>

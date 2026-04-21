@@ -2,8 +2,8 @@ spring:
   servlet:
     multipart:
       enabled: true
-      max-file-size: 200MB
-      max-request-size: 250MB
+      max-file-size: 2GB
+      max-request-size: 2GB
       file-size-threshold: 16KB
 
   # 主資料庫連線資訊（由 AtomikosDataSourceConfig 讀取，建立 XA DataSource）

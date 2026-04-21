@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+import java.io.ByteArrayOutputStream;
 import java.io.RandomAccessFile;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
@@ -48,7 +49,9 @@ public class TxMemoryMappedStrategy implements ProcessingStrategy {
                 long fileSize = channel.size();
                 long segmentSize = 256L * 1024 * 1024;
                 long position = 0;
-                StringBuilder lineBuilder = new StringBuilder(150);
+                // 用 byte buffer 收集整行 bytes，line-break 再以 UTF-8 一次解碼
+                // （UTF-8 中 \n/\r 僅會以 0x0A/0x0D 單 byte 出現，不會是多位元組的一部分）
+                ByteArrayOutputStream lineBytes = new ByteArrayOutputStream(256);
                 boolean headerValidated = false;
                 String lastLine = null;
                 long totalCharSum = 0;
@@ -61,8 +64,9 @@ public class TxMemoryMappedStrategy implements ProcessingStrategy {
                     while (buffer.hasRemaining()) {
                         byte b = buffer.get();
                         if (b == '\n') {
-                            String line = lineBuilder.toString();
-                            lineBuilder.setLength(0);
+                            // Java 8: ByteArrayOutputStream.toString(Charset) 是 Java 10+，改用 String 名稱版
+                            String line = lineBytes.toString("UTF-8");
+                            lineBytes.reset();
                             if (line.length() > 0 && line.charAt(line.length() - 1) == '\r') {
                                 line = line.substring(0, line.length() - 1);
                             }
@@ -90,15 +94,16 @@ public class TxMemoryMappedStrategy implements ProcessingStrategy {
                                 }
                             }
                         } else {
-                            lineBuilder.append((char) b);
+                            lineBytes.write(b);
                         }
                     }
                     position += mapSize;
                 }
 
                 // 處理最後一行（如果檔案結尾無換行）
-                if (lineBuilder.length() > 0) {
-                    String line = lineBuilder.toString();
+                if (lineBytes.size() > 0) {
+                    // Java 8: ByteArrayOutputStream.toString(Charset) 是 Java 10+
+                    String line = lineBytes.toString("UTF-8");
                     if (line.charAt(line.length() - 1) == '\r') {
                         line = line.substring(0, line.length() - 1);
                     }

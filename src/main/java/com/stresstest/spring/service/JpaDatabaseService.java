@@ -94,22 +94,23 @@ public class JpaDatabaseService {
             stmt.execute("CREATE TABLE jpa_id_alloc (next_id NUMBER NOT NULL)");
             stmt.execute("INSERT INTO jpa_id_alloc VALUES (1)");
             // Create table (id managed by application via jpa_id_alloc, master_id FK to file_master)
+            // VARCHAR2(10 CHAR)：以字元（code unit）計長度，UTF-8 下可存 10 個中/日/韓字
             stmt.execute("CREATE TABLE jpa_records (" +
                     "id NUMBER PRIMARY KEY, " +
                     "master_id NUMBER, " +
                     "rowno NUMBER, " +
-                    "field_a VARCHAR2(10), " +
-                    "field_b VARCHAR2(10), " +
-                    "field_c VARCHAR2(10), " +
-                    "field_d VARCHAR2(10), " +
-                    "field_e VARCHAR2(10), " +
-                    "field_f VARCHAR2(10), " +
-                    "field_g VARCHAR2(10), " +
-                    "field_h VARCHAR2(10), " +
-                    "field_i VARCHAR2(10), " +
-                    "field_j VARCHAR2(10), " +
-                    "field_k VARCHAR2(10), " +
-                    "field_l VARCHAR2(10), " +
+                    "field_a VARCHAR2(10 CHAR), " +
+                    "field_b VARCHAR2(10 CHAR), " +
+                    "field_c VARCHAR2(10 CHAR), " +
+                    "field_d VARCHAR2(10 CHAR), " +
+                    "field_e VARCHAR2(10 CHAR), " +
+                    "field_f VARCHAR2(10 CHAR), " +
+                    "field_g VARCHAR2(10 CHAR), " +
+                    "field_h VARCHAR2(10 CHAR), " +
+                    "field_i VARCHAR2(10 CHAR), " +
+                    "field_j VARCHAR2(10 CHAR), " +
+                    "field_k VARCHAR2(10 CHAR), " +
+                    "field_l VARCHAR2(10 CHAR), " +
                     "download_time TIMESTAMP, " +
                     "CONSTRAINT fk_jpa_records_master FOREIGN KEY (master_id) REFERENCES file_master(id)" +
                     ")");
