@@ -81,7 +81,33 @@ public class AsyncApprovalService {
                             "log_time TIMESTAMP DEFAULT SYSTIMESTAMP, " +
                             "FOREIGN KEY (master_id) REFERENCES approval_master(id))");
 
-            log.info("schema ready: approval_master_seq / approval_master / approval_detail");
+            // ── 新增：approval_detail_a / approval_detail_b ─────────────────────
+            // detail_a 的 PK 由 sequence 產生，detail_b 之後要回填這個 PK
+            execIgnoreExists(stmt,
+                    "CREATE SEQUENCE approval_detail_a_seq START WITH 1 INCREMENT BY 1 NOCACHE");
+
+            execIgnoreExists(stmt,
+                    "CREATE TABLE approval_detail_a (" +
+                            "id NUMBER PRIMARY KEY, " +
+                            "master_id NUMBER NOT NULL, " +
+                            "case_id NUMBER NOT NULL, " +
+                            "payload VARCHAR2(200), " +
+                            "log_time TIMESTAMP DEFAULT SYSTIMESTAMP, " +
+                            "CONSTRAINT fk_det_a_master FOREIGN KEY (master_id) REFERENCES approval_master(id))");
+
+            // detail_b.detail_a_id 一開始為 NULL，最後一步才 UPDATE 回填
+            execIgnoreExists(stmt,
+                    "CREATE TABLE approval_detail_b (" +
+                            "id NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY, " +
+                            "master_id NUMBER NOT NULL, " +
+                            "case_id NUMBER NOT NULL, " +
+                            "detail_a_id NUMBER, " +
+                            "payload VARCHAR2(200), " +
+                            "log_time TIMESTAMP DEFAULT SYSTIMESTAMP, " +
+                            "CONSTRAINT fk_det_b_master FOREIGN KEY (master_id) REFERENCES approval_master(id), " +
+                            "CONSTRAINT fk_det_b_det_a FOREIGN KEY (detail_a_id) REFERENCES approval_detail_a(id))");
+
+            log.info("schema ready: approval_master(_seq) / approval_detail / approval_detail_a(_seq) / approval_detail_b");
         }
         schemaReady = true;
     }
@@ -199,5 +225,107 @@ public class AsyncApprovalService {
         }
 
         log.info("[Tx2] 結束（即將 commit）master_id={}", masterId);
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // 4 步驟流程：master → detail_a → detail_b → UPDATE detail_b.detail_a_id
+    //
+    //  說明：
+    //   step1  寫 approval_master，PK 由 sequence 產生 → masterId
+    //   step2  寫 approval_detail_a，PK 由 sequence 產生 → detailAId
+    //   step3  寫 approval_detail_b（detail_a_id 暫為 NULL）→ detailBId（IDENTITY）
+    //   step4  UPDATE approval_detail_b SET detail_a_id = detailAId WHERE id = detailBId
+    //
+    //  整個流程包在一個 @Transactional 內，要嘛全部 commit，要嘛全部 rollback。
+    //  注意 timeout：被 application.yml 的 atomikos.max-timeout 限制（已調為 1800000 ms）。
+    // ─────────────────────────────────────────────────────────────────────────
+
+    /** REST 入口：同步執行（要看 commit 結果）。 */
+    public long[] runMasterDetailABFlow(Long caseId) throws SQLException {
+        ensureSchema();
+        return self.tx4StepsMasterDetailAB(caseId);
+    }
+
+    /**
+     * 4 步驟全部包在同一個 JTA / XA 交易內。
+     * 回傳 [masterId, detailAId, detailBId]。
+     */
+    @Transactional(propagation = Propagation.REQUIRES_NEW, timeout = 1800)
+    public long[] tx4StepsMasterDetailAB(Long caseId) throws SQLException {
+        log.info("[4Steps] 進入交易 thread={} caseId={}",
+                Thread.currentThread().getName(), caseId);
+
+        try (Connection conn = primaryDataSource.getConnection()) {
+            // ── step1: master ────────────────────────────────────────────────
+            long masterId = nextVal(conn, "approval_master_seq");
+            try (PreparedStatement ps = conn.prepareStatement(
+                    "INSERT INTO approval_master (id, case_id, tx_label, thread_name) " +
+                            "VALUES (?, ?, ?, ?)")) {
+                ps.setLong(1, masterId);
+                ps.setLong(2, caseId);
+                ps.setString(3, "STEP1_MASTER");
+                ps.setString(4, Thread.currentThread().getName());
+                ps.executeUpdate();
+            }
+            log.info("[4Steps] step1 master inserted id={}", masterId);
+
+            // ── step2: detail_a (PK from sequence) ───────────────────────────
+            long detailAId = nextVal(conn, "approval_detail_a_seq");
+            try (PreparedStatement ps = conn.prepareStatement(
+                    "INSERT INTO approval_detail_a (id, master_id, case_id, payload) " +
+                            "VALUES (?, ?, ?, ?)")) {
+                ps.setLong(1, detailAId);
+                ps.setLong(2, masterId);
+                ps.setLong(3, caseId);
+                ps.setString(4, "DETAIL_A_PAYLOAD");
+                ps.executeUpdate();
+            }
+            log.info("[4Steps] step2 detail_a inserted id={} (master_id={})", detailAId, masterId);
+
+            // ── step3: detail_b (detail_a_id 暫為 NULL；PK 用 IDENTITY) ──────
+            long detailBId;
+            try (PreparedStatement ps = conn.prepareStatement(
+                    "INSERT INTO approval_detail_b (master_id, case_id, detail_a_id, payload) " +
+                            "VALUES (?, ?, NULL, ?)",
+                    new String[]{"id"})) {
+                ps.setLong(1, masterId);
+                ps.setLong(2, caseId);
+                ps.setString(3, "DETAIL_B_PAYLOAD");
+                ps.executeUpdate();
+                try (ResultSet keys = ps.getGeneratedKeys()) {
+                    if (!keys.next()) {
+                        throw new SQLException("無法取得 detail_b 的 generated id");
+                    }
+                    detailBId = keys.getLong(1);
+                }
+            }
+            log.info("[4Steps] step3 detail_b inserted id={} detail_a_id=NULL", detailBId);
+
+            // ── step4: UPDATE detail_b.detail_a_id ───────────────────────────
+            try (PreparedStatement ps = conn.prepareStatement(
+                    "UPDATE approval_detail_b SET detail_a_id = ? WHERE id = ?")) {
+                ps.setLong(1, detailAId);
+                ps.setLong(2, detailBId);
+                int n = ps.executeUpdate();
+                if (n != 1) {
+                    throw new SQLException("step4 UPDATE 影響筆數異常：" + n);
+                }
+            }
+            log.info("[4Steps] step4 update detail_b.id={} 設定 detail_a_id={}", detailBId, detailAId);
+
+            log.info("[4Steps] 結束（即將 commit）master={} detailA={} detailB={}",
+                    masterId, detailAId, detailBId);
+            return new long[]{masterId, detailAId, detailBId};
+        }
+    }
+
+    /** 共用：取 sequence NEXTVAL。 */
+    private long nextVal(Connection conn, String seqName) throws SQLException {
+        try (PreparedStatement ps = conn.prepareStatement(
+                "SELECT " + seqName + ".NEXTVAL FROM dual");
+             ResultSet rs = ps.executeQuery()) {
+            rs.next();
+            return rs.getLong(1);
+        }
     }
 }

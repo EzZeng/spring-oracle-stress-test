@@ -93,6 +93,31 @@ public class TodoController {
         return ResponseEntity.accepted().body(response);
     }
 
+    /**
+     * POST /api/todo/{id}/master-detail-ab
+     *  4 步驟流程：master → detail_a → detail_b → UPDATE detail_b.detail_a_id
+     *  全部包在同一個 JTA / XA 交易內，timeout=1800s。
+     */
+    @PostMapping("/{id}/master-detail-ab")
+    public ResponseEntity<Map<String, Object>> masterDetailAB(@PathVariable Long id) {
+        try {
+            long t0 = System.currentTimeMillis();
+            long[] ids = asyncApprovalService.runMasterDetailABFlow(id);
+            Map<String, Object> r = new LinkedHashMap<>();
+            r.put("status", "OK");
+            r.put("caseId", id);
+            r.put("masterId", ids[0]);
+            r.put("detailAId", ids[1]);
+            r.put("detailBId", ids[2]);
+            r.put("elapsedMs", System.currentTimeMillis() - t0);
+            return ResponseEntity.ok(r);
+        } catch (Exception e) {
+            log.error("master-detail-ab failed: {}", e.getMessage(), e);
+            return ResponseEntity.status(500)
+                    .body(Collections.singletonMap("error", (Object) e.getMessage()));
+        }
+    }
+
     @PostMapping("/{id}/reject")
     public ResponseEntity<Map<String, Object>> reject(@PathVariable Long id) {
         try {

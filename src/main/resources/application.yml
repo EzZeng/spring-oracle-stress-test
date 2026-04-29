@@ -20,8 +20,10 @@ spring:
         # 關閉持久化日誌，免除 DBA 授予 sys.dba_pending_transactions 等 XA 恢復權限
         # 代價：JVM crash 後 in-doubt transaction 需手動處理
         enable-logging: false
-        max-timeout: 300000
-        default-jta-timeout: 120000
+        # max-timeout 是上限，所有 @Transactional(timeout=…) 不能超過它
+        # 30 分鐘，足以涵蓋大筆數 set-based UPDATE / JDBC batch
+        max-timeout: 1800000
+        default-jta-timeout: 1800000
         log-base-dir: /tmp/atomikos
 
   jpa:
