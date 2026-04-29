@@ -302,20 +302,41 @@ public class AsyncApprovalService {
             log.info("[4Steps] step3 detail_b inserted id={} detail_a_id=NULL", detailBId);
 
             // ── step4: UPDATE detail_b.detail_a_id ───────────────────────────
+            //  模擬：資料來源「不」直接用記憶體裡的 detailAId 變數，
+            //        而是「重新 SELECT approval_detail_a」（同一交易內，read-your-writes）
+            //        典型情境：實務上 step2 與 step4 可能拆在不同 service / 不同 module，
+            //                 step4 拿到的只有 master_id / case_id，必須回查 detail_a。
+            long detailAIdFromQuery;
+            try (PreparedStatement ps = conn.prepareStatement(
+                    "SELECT id FROM approval_detail_a " +
+                            "WHERE master_id = ? AND case_id = ? " +
+                            "ORDER BY id DESC FETCH FIRST 1 ROWS ONLY")) {
+                ps.setLong(1, masterId);
+                ps.setLong(2, caseId);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (!rs.next()) {
+                        throw new SQLException("step4 重新查詢 approval_detail_a 找不到資料 master_id=" + masterId);
+                    }
+                    detailAIdFromQuery = rs.getLong(1);
+                }
+            }
+            log.info("[4Steps] step4 重新 SELECT detail_a 取得 id={}（與 step2 變數比對：{}）",
+                    detailAIdFromQuery, detailAId == detailAIdFromQuery ? "一致" : "不一致");
+
             try (PreparedStatement ps = conn.prepareStatement(
                     "UPDATE approval_detail_b SET detail_a_id = ? WHERE id = ?")) {
-                ps.setLong(1, detailAId);
+                ps.setLong(1, detailAIdFromQuery);
                 ps.setLong(2, detailBId);
                 int n = ps.executeUpdate();
                 if (n != 1) {
                     throw new SQLException("step4 UPDATE 影響筆數異常：" + n);
                 }
             }
-            log.info("[4Steps] step4 update detail_b.id={} 設定 detail_a_id={}", detailBId, detailAId);
+            log.info("[4Steps] step4 update detail_b.id={} 設定 detail_a_id={}", detailBId, detailAIdFromQuery);
 
             log.info("[4Steps] 結束（即將 commit）master={} detailA={} detailB={}",
-                    masterId, detailAId, detailBId);
-            return new long[]{masterId, detailAId, detailBId};
+                    masterId, detailAIdFromQuery, detailBId);
+            return new long[]{masterId, detailAIdFromQuery, detailBId};
         }
     }
 
