@@ -50,6 +50,14 @@ public class AtomikosDataSourceConfig {
     @Value("${domain.datasource.b.password}")
     private String domainBPassword;
 
+    // ── Instance-A 資料庫（第二個 Oracle instance，cross-DB task 用） ────
+    @Value("${instance.a.jdbc-url}")
+    private String instanceAUrl;
+    @Value("${instance.a.username}")
+    private String instanceAUsername;
+    @Value("${instance.a.password}")
+    private String instanceAPassword;
+
     @Bean(name = "dataSource", initMethod = "init", destroyMethod = "close")
     @Primary
     public AtomikosDataSourceBean dataSource() {
@@ -72,6 +80,15 @@ public class AtomikosDataSourceConfig {
         return buildAtomikosDs(
                 "domainBXA",
                 domainBUrl, domainBUsername, domainBPassword,
+                5, 1);
+    }
+
+    /** 第二個 Oracle instance — 跨庫任務的對端。 */
+    @Bean(name = "instanceADataSource", initMethod = "init", destroyMethod = "close")
+    public AtomikosDataSourceBean instanceADataSource() {
+        return buildAtomikosDs(
+                "instanceAXA",
+                instanceAUrl, instanceAUsername, instanceAPassword,
                 5, 1);
     }
 

@@ -78,3 +78,11 @@ domain:
       jdbc-url: jdbc:oracle:thin:@localhost:1521/FREEPDB1
       username: stresstest
       password: stresstest
+
+# Instance-A：第二個 Oracle instance（cross-DB task 用）
+# 預設指向同一個 PDB 以便本機測試；正式環境請改為實際的另一台 instance
+instance:
+  a:
+    jdbc-url: jdbc:oracle:thin:@localhost:1521/FREEPDB1
+    username: stresstest
+    password: stresstest
