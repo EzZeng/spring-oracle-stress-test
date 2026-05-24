@@ -86,3 +86,17 @@ instance:
     jdbc-url: jdbc:oracle:thin:@localhost:1521/FREEPDB1
     username: stresstest
     password: stresstest
+
+# Area 資料庫配置：
+#   Host A：GLOBAL Area 使用 spring.datasource；TW Area 預設同 Host A
+#   Host B：US Area 預設同本機 PDB，正式環境請改成 US 區 Oracle instance
+area:
+  datasource:
+    tw:
+      jdbc-url: jdbc:oracle:thin:@localhost:1521/FREEPDB1
+      username: stresstest
+      password: stresstest
+    us:
+      jdbc-url: jdbc:oracle:thin:@localhost:1521/FREEPDB1
+      username: stresstest
+      password: stresstest

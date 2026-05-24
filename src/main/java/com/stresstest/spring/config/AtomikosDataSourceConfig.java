@@ -11,11 +11,13 @@ import java.util.Properties;
 /**
  * Atomikos XA DataSource 設定。
  * <p>
- * 使用 oracle.jdbc.xa.client.OracleXADataSource 提供三個 XA 連線池：
+ * 使用 oracle.jdbc.xa.client.OracleXADataSource 提供多個 XA 連線池：
  * <ul>
- *   <li>primaryDataSource  — 主資料庫（upload_case、file_detail、biz_x_detail）</li>
+ *   <li>primaryDataSource  — 主資料庫 / GLOBAL Area（upload_case、file_detail、biz_x_detail）</li>
  *   <li>domainADataSource  — Domain-A（approved_file_detail）</li>
  *   <li>domainBDataSource  — Domain-B（approved_file_detail）</li>
+ *   <li>twAreaDataSource   — Host A / TW Area（本情境先保留配置）</li>
+ *   <li>usAreaDataSource   — Host B / US Area（US 上傳結果）</li>
  * </ul>
  * <p>
  * 非 DBA 角色說明：
@@ -58,6 +60,21 @@ public class AtomikosDataSourceConfig {
     @Value("${instance.a.password}")
     private String instanceAPassword;
 
+    // ── Area 資料庫：Host A / TW、Host B / US ────────────────────────
+    @Value("${area.datasource.tw.jdbc-url}")
+    private String twAreaUrl;
+    @Value("${area.datasource.tw.username}")
+    private String twAreaUsername;
+    @Value("${area.datasource.tw.password}")
+    private String twAreaPassword;
+
+    @Value("${area.datasource.us.jdbc-url}")
+    private String usAreaUrl;
+    @Value("${area.datasource.us.username}")
+    private String usAreaUsername;
+    @Value("${area.datasource.us.password}")
+    private String usAreaPassword;
+
     @Bean(name = "dataSource", initMethod = "init", destroyMethod = "close")
     @Primary
     public AtomikosDataSourceBean dataSource() {
@@ -89,6 +106,24 @@ public class AtomikosDataSourceConfig {
         return buildAtomikosDs(
                 "instanceAXA",
                 instanceAUrl, instanceAUsername, instanceAPassword,
+                5, 1);
+    }
+
+    /** Host A / TW Area — 本次 US 上傳情境先保留 XA Resource 配置。 */
+    @Bean(name = "twAreaDataSource", initMethod = "init", destroyMethod = "close")
+    public AtomikosDataSourceBean twAreaDataSource() {
+        return buildAtomikosDs(
+                "twAreaXA",
+                twAreaUrl, twAreaUsername, twAreaPassword,
+                5, 1);
+    }
+
+    /** Host B / US Area — US 客戶上傳結果寫入目標。 */
+    @Bean(name = "usAreaDataSource", initMethod = "init", destroyMethod = "close")
+    public AtomikosDataSourceBean usAreaDataSource() {
+        return buildAtomikosDs(
+                "usAreaXA",
+                usAreaUrl, usAreaUsername, usAreaPassword,
                 5, 1);
     }
 

@@ -257,6 +257,7 @@ zsh run-xeon-vm-simulation.sh 2 6        # 只測策略 2 和 6
 |--------|------|------|
 | `GET` | `/api/strategies` | 列出所有策略 |
 | `POST` | `/api/upload` | 上傳 CSV 並以指定策略寫入 |
+| `POST` | `/api/area/us/upload` | US 客戶跨區上傳；同一 JTA/XA 交易寫入 US 結果與 GLOBAL 操作紀錄 |
 | `GET` | `/api/count` | 查詢目前 Oracle 記錄數 |
 | `POST` | `/api/todo/{caseId}/approve` | 放行案件（寫入雙 DB） |
 | `GET` | `/api/todo/{caseId}/download` | 下載原檔（回傳 ~156 MB TXT） |
@@ -270,6 +271,27 @@ zsh run-xeon-vm-simulation.sh 2 6        # 只測策略 2 和 6
 | `skipInit` | boolean | false | 跳過資料表初始化 |
 | `latencyMs` | int | 0 | 注入延遲 ms |
 | `bizType` | string | 無 | 業務類型（BIZ_A/BIZ_B/BIZ_C） |
+
+#### POST `/api/area/us/upload` 參數
+
+| 參數 | 類型 | 預設 | 說明 |
+|------|------|------|------|
+| `file` | MultipartFile | 必填 | 上傳的 CSV 資料檔 |
+| `userId` | string | 必填 | 模擬 US 客戶使用者識別 |
+| `strategy` | int | 1 | 策略編號 1~13；不支援 `[JPA] ThreadPool save` |
+| `skipInit` | boolean | false | 跳過 JPA schema 初始化 |
+| `latencyMs` | int | 0 | 注入延遲 ms |
+| `bizType` | string | 無 | 業務類型（BIZ_A/BIZ_B/BIZ_C） |
+| `simulateFailure` | string | `none` | `none` / `afterUs` / `afterGlobal`，用來驗證 XA rollback |
+
+此端點模擬 Host A 具備 GLOBAL/TW Area、Host B 具備 US Area。一次請求會在同一個 JTA/XA 交易內：
+
+1. 執行既有上傳策略，寫入 `file_master` / `file_detail` 或 JPA 暫存表。
+2. 建立 `upload_case`。
+3. 寫入 US Area 的 `us_upload_result`。
+4. 寫入 GLOBAL Area 的 `global_user_operation_log`。
+
+`simulateFailure=afterUs` 或 `simulateFailure=afterGlobal` 會在寫入區域表後丟出例外；交易應整體 rollback，包含上傳明細、案件、US 結果與 GLOBAL 操作紀錄。
 
 ---
 
@@ -293,6 +315,7 @@ spring-oracle-stress-test/
 ├── run-flow-stress-test.sh       # 完整流程壓力測試
 ├── run-multi-biz-stress-test.sh  # 多業務並行測試
 ├── run-download-stress-test.sh   # 原檔下載測試
+├── run-us-area-xa-test.sh        # US Area 跨區 XA 上傳 / rollback 驗證
 ├── run-latency-test.sh           # 網路延遲模擬測試
 ├── run-spring-threshold.sh       # Heap 閾值測試
 ├── run-production-threshold.sh   # 生產環境模擬閾值測試
@@ -324,7 +347,29 @@ domain:
       jdbc-url: jdbc:oracle:thin:@<host_b>:<port>/<service>
       username: <user>
       password: <password>
+
+area:
+  datasource:
+    tw:
+      jdbc-url: jdbc:oracle:thin:@<host_a>:<port>/<service>
+      username: <user>
+      password: <password>
+    us:
+      jdbc-url: jdbc:oracle:thin:@<host_b_us>:<port>/<service>
+      username: <user>
+      password: <password>
 ```
+
+`spring.datasource` 視為 Host A / GLOBAL Area；`area.datasource.tw` 是 Host A / TW Area，本 US 情境只保留 XA Resource 配置；`area.datasource.us` 是 Host B / US Area。
+
+### US Area XA rollback 驗證
+
+```bash
+bash run-us-area-xa-test.sh              # 預設策略 2
+bash run-us-area-xa-test.sh 1 10000      # 策略 1，產生 10,000 筆測試資料
+```
+
+腳本會依序執行成功案例、`simulateFailure=afterUs`、`simulateFailure=afterGlobal`，並查詢 `us_upload_result`、`global_user_operation_log`、`upload_case`、`file_master` 的筆數確認 rollback。
 
 ### JVM 調整
 
