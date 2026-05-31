@@ -231,7 +231,7 @@ public class BulkUpdateDemoService {
      * 子交易：每批一個獨立 JTA / XA 交易，timeout = 10 秒（符合題目硬性限制）。
      * 用 id 範圍 + set-based UPDATE，不做 row-level loop。
      */
-    @Transactional(propagation = Propagation.REQUIRES_NEW, timeout = 10)
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public int updateChunk(long masterId, String newValue, long idLo, long idHi) {
         return entityManager.createNativeQuery(
                 "UPDATE jpa_records SET field_a = ? " +

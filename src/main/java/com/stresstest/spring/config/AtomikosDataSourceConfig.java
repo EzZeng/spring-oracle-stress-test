@@ -109,7 +109,6 @@ public class AtomikosDataSourceConfig {
                 5, 1);
     }
 
-<<<<<<< HEAD
     /** Host A / TW Area — 本次 US 上傳情境先保留 XA Resource 配置。 */
     @Bean(name = "twAreaDataSource", initMethod = "init", destroyMethod = "close")
     public AtomikosDataSourceBean twAreaDataSource() {
@@ -127,9 +126,6 @@ public class AtomikosDataSourceConfig {
                 usAreaUrl, usAreaUsername, usAreaPassword,
                 5, 1);
     }
-
-=======
->>>>>>> aa4f7e2 (555)
     private AtomikosDataSourceBean buildAtomikosDs(
             String uniqueName,
             String url, String username, String password,

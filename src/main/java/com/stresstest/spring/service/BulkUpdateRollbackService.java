@@ -177,7 +177,7 @@ public class BulkUpdateRollbackService {
     // 單批：backup + update + markDone（同一個 10s 子交易）
     //   若任一步炸掉 → 整批 rollback（連 backup 也不留）→ 不會殘留錯誤狀態
     // ─────────────────────────────────────────────────────────────────────────
-    @Transactional(propagation = Propagation.REQUIRES_NEW, timeout = 10)
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public int backupAndUpdateChunk(long jobId, long masterId, String newValue,
                                     int chunkNo, long lo, long hi) {
         // step1: backup（INSERT … SELECT），冪等：用 PK (job_id, record_id) 去重
@@ -256,7 +256,7 @@ public class BulkUpdateRollbackService {
     }
 
     /** 子交易：用 backup 的 old_value 反向 UPDATE 一個 chunk。 */
-    @Transactional(propagation = Propagation.REQUIRES_NEW, timeout = 10)
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public int restoreChunk(long jobId, int chunkNo, long lo, long hi) {
         // 用 backup join 還原
         int n = entityManager.createNativeQuery(
@@ -317,7 +317,7 @@ public class BulkUpdateRollbackService {
     // ─────────────────────────────────────────────────────────────────────────
     // 小工具子交易（每個都 < 10s）
     // ─────────────────────────────────────────────────────────────────────────
-    @Transactional(propagation = Propagation.REQUIRES_NEW, timeout = 10)
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public long createJob(long masterId, String newValue) {
         Number id = (Number) entityManager.createNativeQuery(
                 "SELECT bulk_update_job_seq.NEXTVAL FROM dual").getSingleResult();
@@ -330,7 +330,7 @@ public class BulkUpdateRollbackService {
         return id.longValue();
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW, timeout = 10)
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void markChunk(long jobId, int chunkNo, long lo, long hi, String status, int affected, String errMsg) {
         entityManager.createNativeQuery(
                 "MERGE INTO bulk_update_progress p " +
@@ -348,7 +348,7 @@ public class BulkUpdateRollbackService {
                 .executeUpdate();
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW, timeout = 10)
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void bumpJob(long jobId, int doneDelta, int failedDelta) {
         entityManager.createNativeQuery(
                 "UPDATE bulk_update_job SET done_chunks = done_chunks + ?, " +
@@ -357,7 +357,7 @@ public class BulkUpdateRollbackService {
                 .executeUpdate();
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW, timeout = 10)
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void markJobStatus(long jobId, String status) {
         entityManager.createNativeQuery(
                 "UPDATE bulk_update_job SET status = ?, updated_at = SYSTIMESTAMP WHERE id = ?")

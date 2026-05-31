@@ -126,7 +126,7 @@ public class CrossInstanceTaskService {
     // TX-A2P：Instance-A insert → Primary update
     //   單一 JTA/XA 交易，兩邊任一失敗 → 雙邊 rollback
     // ─────────────────────────────────────────────────────────────────────────
-    @Transactional(propagation = Propagation.REQUIRES_NEW, timeout = 10)
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public long txA2P_insertA_updatePrimary(long primaryId, String payload) throws SQLException {
         long instanceAId;
 
@@ -161,7 +161,7 @@ public class CrossInstanceTaskService {
     // ─────────────────────────────────────────────────────────────────────────
     // TX-P2A：反向處理 — Primary insert → Instance-A update
     // ─────────────────────────────────────────────────────────────────────────
-    @Transactional(propagation = Propagation.REQUIRES_NEW, timeout = 10)
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public long txP2A_insertPrimary_updateA(long instanceAId, String payload) throws SQLException {
         long primaryId;
 
@@ -196,7 +196,7 @@ public class CrossInstanceTaskService {
     // ─────────────────────────────────────────────────────────────────────────
     // 種子資料：建立兩邊的初始 row（供 demo 端點使用）
     // ─────────────────────────────────────────────────────────────────────────
-    @Transactional(propagation = Propagation.REQUIRES_NEW, timeout = 10)
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public long[] seed(String payload) throws SQLException {
         ensureSchema();
         long primaryId, instanceAId;
